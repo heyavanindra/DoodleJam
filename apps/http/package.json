@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build":"esbuild src/index.ts --platform=node --bundle --outdir=dist",
+    "start": "node ./dist/index.js",
+    "dev":"pnpm run build && pnpm run start"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +17,9 @@
   },
   "dependencies": {
     "@types/express": "^5.0.3",
-    "express": "^5.1.0"
+    "esbuild": "^0.25.5",
+    "express": "^5.1.0",
+    "@repo/db": "workspace:*",
+    "@repo/backend-common": "workspace:*"
   }
 }

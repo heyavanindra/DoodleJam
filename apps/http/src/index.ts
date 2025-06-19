@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
-
+import { prisma } from "@repo/db";
 const app = express();
+import {JWT_SECRET} from "@repo/backend-common/config"
 
 app.use(express.json());
 
