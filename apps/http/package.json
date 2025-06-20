@@ -5,22 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build":"esbuild src/index.ts --platform=node --bundle --outdir=dist",
+    "build": "esbuild src/index.ts --platform=node --bundle --outdir=dist",
     "start": "node ./dist/index.js",
-    "dev":"pnpm run build && pnpm run start"
+    "dev": "pnpm run build && pnpm run start"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.10"
   },
   "dependencies": {
+    "@repo/backend-common": "workspace:*",
+    "@repo/common": "workspace:*",
+    "@repo/db": "workspace:*",
     "@types/express": "^5.0.3",
     "esbuild": "^0.25.5",
     "express": "^5.1.0",
-    "@repo/db": "workspace:*",
-    "@repo/backend-common": "workspace:*",
-    "@repo/common":"workspace:*"
+    "jsonwebtoken": "^9.0.2"
   }
 }

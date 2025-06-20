@@ -7,6 +7,11 @@ export const signupSchema = z.object({
   name: z.string(),
 });
 
+export const loginSchema = z.object({
+  username:z.string(),
+  password:z.string()
+})
+
 export const CreateRoomSchema = z.object({
     name:z.string().min(3).max(20),
 })
