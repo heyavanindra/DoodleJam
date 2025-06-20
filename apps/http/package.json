@@ -20,6 +20,7 @@
     "esbuild": "^0.25.5",
     "express": "^5.1.0",
     "@repo/db": "workspace:*",
-    "@repo/backend-common": "workspace:*"
+    "@repo/backend-common": "workspace:*",
+    "@repo/common":"workspace:*"
   }
 }
