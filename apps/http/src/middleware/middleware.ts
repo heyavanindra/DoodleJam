@@ -12,7 +12,14 @@ export function middleware(req: Request, res: Response, next: NextFunction) {
     });
     return;
   }
-  const decoded = jwt.verify(token, JWT_SECRET);
+  const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload; 
+  if (!decoded) {
+    res.status(403).json({
+      message:"unauthorized"
+    })
+    return;
+  }
+  req.userId = decoded.userId 
   if (!decoded) {
     res.status(401).json({ message: "Unauthorized", success: false });
     return;
