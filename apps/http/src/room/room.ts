@@ -10,7 +10,7 @@ roomRouter.post("/", middleware, async (req: Request, res: Response) => {
 
   if (!data.success) {
     res.status(500).json({
-      message: "failed to create a room",
+      message: data.error.message ||  "failed to create a room",
     });
     return;
   }
@@ -23,7 +23,7 @@ roomRouter.post("/", middleware, async (req: Request, res: Response) => {
     return;
   }
   try {
-    await prisma.room.create({
+    const room = await prisma.room.create({
       data: {
         slug: data.data.name,
         adminId: userId,
@@ -32,14 +32,28 @@ roomRouter.post("/", middleware, async (req: Request, res: Response) => {
 
     res.status(201).json({
       message: "Room is created",
+      roomId :room.id,
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     res.status(501).json({
       message: "Error while creating room",
     });
     return;
   }
+});
+
+roomRouter.get("/", async (req: Request, res: Response) => {
+  const roomId = Number(req.params.roomId);
+  const message = await prisma.chat.findMany({
+    where: {
+      roomId: roomId,
+    },
+    orderBy: {
+      id: "desc",
+    },
+    take: 50,
+  });
 });
 
 export default roomRouter;
