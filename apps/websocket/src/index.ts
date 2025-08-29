@@ -30,9 +30,9 @@ function checkUser(token: string): string | null {
 
 const wss = new WebSocketServer({ port: 8080 });
 wss.on("connection", function connection(ws, request) {
-  const url = request.url;
-  if (!url) {
-    return;
+const url = request.url;
+if (!url) {
+  return;
   }
   const queryParams = new URLSearchParams(url.split("?")[1]);
   const token = queryParams.get("token") ?? "";
@@ -62,10 +62,8 @@ wss.on("connection", function connection(ws, request) {
       user.rooms = user.rooms.filter((x) => x === parsedData.roomId);
     }
     if (parsedData.type === "chat") {
-      console.log("in here");
       const roomId = parsedData.roomId;
       const message = parsedData.message;
-      console.log("toomid and message", roomId, message);
 
       users.forEach((user) => {
         if (user.rooms.includes(roomId)) {
@@ -74,17 +72,21 @@ wss.on("connection", function connection(ws, request) {
               type: "chat",
               message: message,
               roomId,
-            }),
+            })
           );
         }
       });
-      await prisma.chat.create({
-        data: {
-          roomId,
-          message,
-          userId: authenticatedUserId,
-        },
-      });
+      try {
+        await prisma.chat.create({
+          data: {
+            roomId,
+            message,
+            userId: authenticatedUserId,
+          },
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
   });
 
