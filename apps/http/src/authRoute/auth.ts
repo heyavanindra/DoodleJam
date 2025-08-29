@@ -9,12 +9,11 @@ const authRoute: Router = express.Router();
 authRoute.post("/signup", async (req: Request, res: Response) => {
   const parsedData = signupSchema.safeParse(req.body);
   if (!parsedData.success) {
-    res
-      .json({
-        success: false,
-        message: "Wrong Inputs",
-      })
-      .status(502);
+    res.status(502).json({
+      success: false,
+      message: "Wrong Inputs",
+    });
+
     return;
   }
 
@@ -29,28 +28,22 @@ authRoute.post("/signup", async (req: Request, res: Response) => {
     });
 
     if (!createdUser) {
-      res
-        .json({
-          success: false,
-          message: "Unable to create user",
-        })
-        .status(504);
+      res.status(504).json({
+        success: false,
+        message: "Unable to create user",
+      });
     }
 
-    res
-      .json({
-        success: true,
-        message: "User Created",
-      })
-      .status(200);
+    res.status(200).json({
+      success: true,
+      message: "User Created",
+    });
   } catch (error) {
     console.log(error);
-    res
-      .json({
-        success: false,
-        message: "Error in signup route",
-      })
-      .status(403);
+    res.status(403).json({
+      success: false,
+      message: "Error in signup route",
+    });
   }
 });
 
