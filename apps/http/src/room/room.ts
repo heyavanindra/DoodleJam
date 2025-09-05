@@ -45,6 +45,7 @@ roomRouter.post("/", middleware, async (req: Request, res: Response) => {
 
 roomRouter.get("/", async (req: Request, res: Response) => {
   const roomId = Number(req.params.roomId);
+ try {
   const message = await prisma.chat.findMany({
     where: {
       roomId: roomId,
@@ -54,6 +55,36 @@ roomRouter.get("/", async (req: Request, res: Response) => {
     },
     take: 50,
   });
+  res.status(200).json({
+    message:message
+  })
+ } catch (error) {
+  console.error(error)
+   res.status(500).json({
+    message:"Error while fetching the room"
+  })
+ }
 });
+
+roomRouter.get("/:slug",async (req:Request,res:Response) => {
+  const slug = req.params.slug;
+ try {
+  const room = await prisma.room.findFirst({
+    where:{
+      slug
+    }
+  })
+  res.status(200).json({
+    roomId:room?.id
+  })
+ } catch (error) {
+  res.status(500).json({
+    message:"Can't find any room with this slug"
+  })
+ }
+
+
+
+})
 
 export default roomRouter;

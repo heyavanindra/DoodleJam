@@ -51,12 +51,12 @@ authRoute.post("/login", async (req: Request, res: Response) => {
   const data = req.body;
   const parsedData = loginSchema.safeParse(data);
   if (!parsedData.success) {
-    res
-      .json({
+    console.log(parsedData.error.message)
+    res .status(502).json({
         success: false,
         message: "Wrong Inputs",
       })
-      .status(502);
+     ;
     return;
   }
   try {

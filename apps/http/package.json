@@ -14,6 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@types/cors": "^2.8.19",
     "@types/jsonwebtoken": "^9.0.10"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",
     "@types/express": "^5.0.3",
+    "cors": "^2.8.5",
     "esbuild": "^0.25.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"

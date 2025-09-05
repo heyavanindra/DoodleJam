@@ -16,5 +16,3 @@ DATABASE_URL= // Your connection string goes here
 - Now run `pnpm run dev` in parent folder
 
 ## API Testing with Postman (Coming soon)
-
-
