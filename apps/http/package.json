@@ -15,7 +15,8 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/cors": "^2.8.19",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsc-watch": "^7.1.1"
   },
   "dependencies": {
     "@repo/backend-common": "workspace:*",

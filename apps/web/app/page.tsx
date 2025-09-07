@@ -1,23 +1,23 @@
-"use client"
-
-
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { cn } from "../utils/cn";
 
 
 export default function Home() {
 
-const [roomId, setRoomId] = useState("")
-const router = useRouter()
-  return <div className="flex h-screen justify-center items-center w-full ">
-
-  <input type="text" placeholder="Room Id"  onChange={(e)=> {
-    setRoomId(e.target.value)
-  }}/>
-
-  <button onClick={()=> {
-    router.push(`/room/${roomId}`)
-  }}>Click</button>
-
-  </div>;
+  return (
+    <div className="relative flex h-screen w-full items-center justify-center bg-white dark:bg-black">
+      <div
+        className={cn(
+          "absolute inset-0",
+          "[background-size:40px_40px]",
+          "[background-image:linear-gradient(to_right,#e4e4e7_1px,transparent_1px),linear-gradient(to_bottom,#e4e4e7_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
+        )}
+      />
+      {/* Radial gradient for the container to give a faded look */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
+      <p className="relative z-20 bg-gradient-to-b from-neutral-200 to-neutral-500 bg-clip-text py-8 text-4xl font-bold text-transparent sm:text-7xl uppercase">
+          Welcome to Doodle jam
+      </p>
+    </div>
+  );
 }
