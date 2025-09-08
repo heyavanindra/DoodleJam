@@ -2,9 +2,9 @@
 
 import axios from 'axios'
 import React, { useState } from 'react'
-import { BACKEND_URL } from '../config'
 import { useRouter } from 'next/navigation'
 import Cookie from "js-cookie"
+import { BACKEND_URL } from '../../config'
 
 const Login = () => {
   const [username, setusername] = useState("")
@@ -19,7 +19,7 @@ const Login = () => {
       })
       if (response.status === 200) {
         Cookie.set("token", response.data.token)
-        router.push("/")
+        router.push("/dashboard")
       } else {
         console.log("Wrong ID password")
       }

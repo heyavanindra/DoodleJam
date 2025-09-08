@@ -34,7 +34,8 @@ authRoute.post("/signup", async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+    
+    res.status(201).json({
       success: true,
       message: "User Created",
     });
