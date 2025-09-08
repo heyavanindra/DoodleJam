@@ -17,7 +17,7 @@ export default function Home() {
           onChange={(e) => setRoomId(e.target.value)}
         />
         <button
-          onClick={() => router.push(`/room/${roomId}`)}
+          onClick={() => router.push(`/canvas/${roomId}`)}
           className="px-4 py-2 rounded-lg bg-neutral-600 hover:bg-neutral-500 transition font-medium"
         >
           Join

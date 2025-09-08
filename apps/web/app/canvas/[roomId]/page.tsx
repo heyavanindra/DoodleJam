@@ -9,7 +9,7 @@ const Canvas = async ({
 }) => {
   const roomId = (await params).roomId;
   console.log(roomId);
-  return <CanvasComponent></CanvasComponent>;
+  return <CanvasComponent roomId={roomId}></CanvasComponent>;
 };
 
 export default Canvas;

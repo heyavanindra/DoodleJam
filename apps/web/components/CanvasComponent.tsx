@@ -1,45 +1,43 @@
-"use client"
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react'
-import {RenderCanvasShapes} from '../utils/canvas';
-import { WEBSOCKET_URL } from '../app/config';
-
-const CanvasComponent = () => {
-      const canvasRef = useRef<HTMLCanvasElement>(null);
-      const [socket, setSocket] = useState<WebSocket | null>(null)
-      useEffect(() => {
-        const ws  = new WebSocket(WEBSOCKET_URL)
-        ws.onopen = () => {
-            setSocket(ws)
-        }
-       
-      }, [])
-      
-      useEffect(() => {
-        if (canvasRef.current) {
-          canvasRef.current.width = window.innerWidth;
-          canvasRef.current.height = window.innerHeight;
-          RenderCanvasShapes(canvasRef.current);
-        } 
+import React, { useEffect, useState } from "react";
+import { WEBSOCKET_URL } from "../app/config";
+import Cookies from "js-cookie";
+import RoomCanvas from "./RoomCanvas";
 
 
+const CanvasComponent = ({ roomId }: { roomId: string }) => {
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
-      }, [canvasRef]);
+  useEffect(() => {
+    const token = Cookies.get("token");
+    const ws = new WebSocket(`${WEBSOCKET_URL}?token=${token}`);
 
-      if (!socket) {
-        return <div className=' absolute inset-0 h-screen w-full justify-center  items-center bg-black text-9xl text-center'>Loading...</div>
-      }
+    ws.onopen = () => {
+      setSocket(ws);
+      ws.send(JSON.stringify({
+        type:"join_room",
+        roomId:roomId
+      }))
+    };
+  }, []);
+
+
+  if (!socket) {
+    return (
+      <div className="absolute inset-0 h-screen w-full items-center justify-center bg-black text-center text-9xl">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <>
-         <div className="">
-      <canvas
-        className="bg-black outline-1"
-        ref={canvasRef}
-      ></canvas>
-    </div>
+      <div className="">
+        <RoomCanvas socket={socket}  roomId={roomId}></RoomCanvas>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default CanvasComponent
+export default CanvasComponent;
