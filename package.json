@@ -1,5 +1,5 @@
 {
-  "name": "canvas-app",
+  "name": "doodle-jam",
   "private": true,
   "scripts": {
     "build": "turbo run build",

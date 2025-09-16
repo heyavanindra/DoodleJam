@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model User {
+//   id    Int     @id @default(autoincrement())
+//   email String  @unique
+//   name  String?
+//   posts Post[]
+// }
+//
+//
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  username      String   @unique
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  password      String
+  Room          Room[]
+}
+
+model Room {
+  id      Int      @id @default(autoincrement())
+  name    String
+  adminId String
+  admin   User     @relation(fields: [adminId], references: [id])
+  shapes  Shapes[]
+}
+
+model Shapes {
+  id     Int         @id @default(autoincrement())
+  shapeType  ShapesTypes
+  data   Json
+  Room   Room?       @relation(fields: [roomId], references: [id])
+  roomId Int?
+}
+
+enum ShapesTypes {
+  RECT
+  CIRCLE
+  PENCIL
+}

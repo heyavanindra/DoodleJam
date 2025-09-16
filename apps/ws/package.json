@@ -1,0 +1,31 @@
+{
+  "name": "ws",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/server.ts --platform=node --bundle --outdir=dist",
+    "start": "node ./dist/server.js",
+    "dev": "tsc-watch --onSuccess \"node dist/server.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^24.3.1",
+    "@types/ws": "^8.18.1",
+    "tsc-watch": "^7.1.1",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@repo/backend-common": "workspace:*",
+    "@repo/queue":"workspace:*",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bullmq": "^5.58.5",
+    "esbuild": "^0.25.9",
+    "jsonwebtoken": "^9.0.2",
+    "ws": "^8.18.3"
+  }
+}
