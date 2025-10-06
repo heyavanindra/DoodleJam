@@ -1,40 +1,26 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import {JWT_SECRET} from "@repo/backend-common"
-
-export default function authMiddleware(
+import { JWT_SECRET } from "@repo/backend-common";
+import { auth } from "@repo/auth/server";
+import { fromNodeHeaders } from "better-auth/node";
+export default async function authMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  const token = req.cookies.auth;
-  console.log("token",token)
-  if (!token) {
-    res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-    });
-    return;
-  }
   try {
-
-    
-    const decoded = jwt.verify(token,JWT_SECRET) as JwtPayload;
-    console.log("decoded",decoded)
-    if (!decoded) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
-    req.userId = (decoded as JwtPayload).userId;
-    next();
-  } catch (error) {
-    console.error(error);
-    res.status(502).json({
-      success: false,
-      message: "Invalid token",
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
     });
+    if (!session || !session.user) {
+      return res.status(403).json({
+        message: "unAuthenticated",
+      });
+    }
+    req.userId = session.user.id;
+    next();
+  } catch(err) {
+    console.error("Error in auth middleware:", err);
+    res.status(500).json({ error: "Internal error" });
   }
 }

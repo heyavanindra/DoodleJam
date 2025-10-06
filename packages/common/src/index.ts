@@ -29,7 +29,7 @@ export const signupSchema = z.object({
 
 export const loginSchema = z.object({
   username: z
-    .string()
+    .email()
     .min(3, { message: "Username must be at least 3 characters long" }),
   
   password: z

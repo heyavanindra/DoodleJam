@@ -1,5 +1,5 @@
 import { RefObject } from "react";
-import api from "./api";
+import api from "../api";
 
 type ShapeTypeProps = {
   shapeType: "RECT" | "CIRCLE" | "LINE";
@@ -175,26 +175,4 @@ function clearCanvar(
       ctx.strokeStyle = "rgba(255,255,255)";
     }
   });
-}
-
-async function getExistingshapes({ roomId }: { roomId: string }) {
-  const response = await api.get(`/shapes/${roomId}`);
-  const res = response.data.shapes;
-
-  const shapes = res.map(
-    (data: {
-      id: string;
-      type: string;
-      shapetype: string;
-      data: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-      };
-    }) => {
-      return data.data;
-    },
-  );
-  return shapes;
 }

@@ -1,24 +1,25 @@
 "use client";
 
 import { useSocket } from "@/hook/socket";
-import Cookies from "js-cookie";
 import CanvasComponent from "./CanvasComponent";
+import { authClient } from "@repo/auth/client";
+import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type RoomCanvasTypes = {
   roomId: string;
 };
 const Canvas = ({ roomId }: RoomCanvasTypes) => {
-  const token = Cookies.get("auth");
-  const { socket } = useSocket({ token, roomId });
+
+ 
+
+  const { socket } = useSocket({ roomId });
 
   if (!socket) {
-    console.log(socket);
     return <div>Loading...</div>;
   }
 
-  return (
-    <CanvasComponent roomId={roomId} ws={socket}></CanvasComponent>
-  );
+  return <CanvasComponent roomId={roomId} ws={socket}></CanvasComponent>;
 };
 
 export default Canvas;

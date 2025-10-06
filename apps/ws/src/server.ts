@@ -1,19 +1,26 @@
-import { createServer, IncomingMessage } from "http";
+import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { JWT_SECRET } from "@repo/backend-common";
 const server = createServer();
 import { userQueue } from "@repo/queue";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
 const wsServer = new WebSocketServer({ server });
 
-function isAuthenticated(ws: WebSocket, token: string) {
-  const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-  if (!decoded) {
-    ws.close();
-    return;
+async function validateToken(token: string) {
+  try {
+    const JWKS = createRemoteJWKSet(
+      new URL(`${process.env.BETTER_AUTH_URL}/api/auth/jwks`)
+    );
+
+    const { payload } = await jwtVerify(token, JWKS, {
+      issuer: process.env.BETTER_AUTH_CLIENTURL,
+      audience: process.env.BETTER_AUTH_CLIENT_URL,
+    });
+    return payload;
+  } catch (error) {
+    console.error("Token validation failed:", error);
+    throw error;
   }
-  return decoded.userId;
 }
 
 type UserProps = {
@@ -30,16 +37,18 @@ wsServer.on("connection", async (ws, req) => {
     ws.close();
     return;
   }
-  const userId = isAuthenticated(ws, token);
+  const userId = await validateToken(token);
   User.push({
-    userId: String(userId),
+    userId: String(userId.id),
     roomId: [],
     ws: ws,
   });
-
+  console.log("connection done");
   ws.on("message", (data) => {
+    console.log("in here");
     const parsedData = JSON.parse(data.toString());
     if (parsedData.type === "join_room") {
+      console.log("joining room");
       const user = User.find((x) => x.ws === ws);
       user?.roomId.push(parsedData.roomId);
       console.log(user?.userId);
@@ -47,6 +56,7 @@ wsServer.on("connection", async (ws, req) => {
     }
 
     if (parsedData.type === "leave_room") {
+      console.log("leaving room");
       const foundUser = User.find((x) => x.ws === ws);
       if (!foundUser) {
         return;
@@ -55,6 +65,7 @@ wsServer.on("connection", async (ws, req) => {
     }
 
     if (parsedData.type === "chat") {
+      console.log("sending data");
       const roomId = parsedData.roomId;
       const shape = parsedData.shape;
       User.map((user, _) => {

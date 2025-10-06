@@ -20,9 +20,10 @@ import api from "@/lib/api";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import {z} from "zod"
+import { z } from "zod";
+import { authClient } from "@repo/auth/client";
 
-type User = z.Infer<typeof signupSchema>
+type User = z.Infer<typeof signupSchema>;
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -45,17 +46,33 @@ const SignUp = () => {
     mouseY.set(e.clientY - 192);
   };
 
-  const onSubmit :SubmitHandler<User> = async (data) => {
+  const onSubmit: SubmitHandler<User> = async (data) => {
     console.log(data);
     try {
-      const response = await api.post("/auth/signup", data);
-      toast.success(response.data.message || "Login successfull");
-      redirect.push("/login");
+       await authClient.signUp.email(
+        {
+          email: data.email,
+          password: data.password,
+          name: data.name,
+          callbackURL: "/",
+        },
+
+        {
+          onError: (ctx) => {
+            toast.error(ctx.error.message);
+          },
+          onSuccess: (ctx) => {
+            toast.success("Sign Up successfull")
+            redirect.push("/login");
+          },
+        }
+      );
+     
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       toast.error(
         axiosError.response?.data.message ||
-          "Something went wrong while signing up",
+          "Something went wrong while signing up"
       );
       console.error(error);
     }

@@ -15,10 +15,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@repo/common";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { AxiosError } from "axios";
-import api from "@/lib/api";
-import { z } from "zod";
 
+import { z } from "zod";
+import { authClient } from "@repo/auth/client";
 type DataType = z.Infer<typeof loginSchema>;
 
 const Login = () => {
@@ -46,18 +45,26 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<DataType> = async (data) => {
     console.log(data);
-    try {
-      const response = await api.post("/auth/login", data);
-      toast.success(response.data.message || "Login successfull");
-      redirect.push("/dashboard");
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
-      toast.error(
-        axiosError.response?.data.message ||
-          "Something went wrong while signing up",
-      );
-      console.error(error);
-    }
+
+   try {
+     await authClient.signIn.email(
+      {
+        email: data.username,
+        password: data.password,
+      },
+      {
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+        onSuccess: (ctx) => {
+          toast.success("Sign in successfull");
+          redirect.push("/dashboard");
+        },
+      }
+    );
+   } catch (error) {
+    console.error(error)
+   }
   };
 
   return (

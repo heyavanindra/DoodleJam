@@ -1,21 +1,36 @@
+import { authClient } from "@repo/auth/client";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export const useSocket = ({token,roomId}:{
-  token:string | undefined,
-  roomId:string
-}) => {
+export const useSocket = ({ roomId }: { roomId: string }) => {
   const [socket, setSocket] = useState<WebSocket>();
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000?token=${token}`);
-    ws.onopen = () => {
-      const join_room= {
-        type:"join_room",
-        roomId:roomId
+    const fetchTokenAndConnect = async () => {
+      const res = await authClient.token();
+      const userToken = res.data?.token;
+      if (!userToken) {
+        redirect("/login");
       }
-      ws.send(JSON.stringify(join_room));
+
+      const ws = new WebSocket(`ws://localhost:8000?token=${userToken}`);
+
+      ws.onopen = () => {
+        const join_room = { type: "join_room", roomId };
+        ws.send(JSON.stringify(join_room));
+      };
+
+      setSocket(ws);
+
+      ws.onclose = () => {
+        console.log("ws closed");
+      };
+
+      return () => ws.close();
     };
-    setSocket(ws);
-  }, []);
+
+    fetchTokenAndConnect();
+  }, [roomId]);
+
   return { socket };
 };

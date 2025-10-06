@@ -20,6 +20,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@repo/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@repo/backend-common':
         specifier: workspace:*
         version: link:../../packages/backend-common
@@ -32,6 +35,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
+      better-auth:
+        specifier: ^1.3.9
+        version: 1.3.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -87,6 +93,12 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.62.0(react@19.1.0))
+      '@prisma/client':
+        specifier: ^6.15.0
+        version: 6.15.0(prisma@6.15.0(typescript@5.9.2))(typescript@5.9.2)
+      '@repo/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@repo/common':
         specifier: workspace:*
         version: link:../../packages/common
@@ -211,6 +223,9 @@ importers:
       esbuild:
         specifier: ^0.25.9
         version: 0.25.9
+      jose:
+        specifier: ^6.1.0
+        version: 6.1.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
@@ -236,6 +251,22 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
+
+  packages/auth:
+    dependencies:
+      better-auth:
+        specifier: ^1.3.9
+        version: 1.3.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      dotenv:
+        specifier: ^17.2.2
+        version: 17.2.2
+    devDependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../database
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
 
   packages/backend-common:
     dependencies:
