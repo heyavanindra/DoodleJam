@@ -20,5 +20,5 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   runtime: "nodejs",
-  matcher: ["/dashboard/:path*" ,"/login","/"]
+  matcher: ["/dashboard/:path*" ,"/login"]
 };
