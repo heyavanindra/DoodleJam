@@ -2,7 +2,7 @@ import { createRoomSchema } from "@repo/common";
 import { prismaClient } from "@repo/db";
 import express, { Request, Response, Router } from "express";
 import authMiddleware from "../../middleware/auth.middleware";
-const roomRouter:Router = express().router;
+const roomRouter: Router = express().router;
 
 roomRouter.post("/", authMiddleware, async (req: Request, res: Response) => {
   const parsedData = createRoomSchema.safeParse(req.body);
@@ -79,5 +79,25 @@ roomRouter.get("/:slug", async (req: Request, res: Response) => {
   }
 });
 
+roomRouter.get("/", authMiddleware, async (req, res) => {
+  const userId = req.userId;
+  if (!userId) {
+    res.status(403).json({
+      message: "Unauthorized",
+      success: false,
+    });
+  }
+
+  const rooms = await prismaClient.room.findMany({
+    where: {
+      adminId: userId,
+    },
+  });
+  res.json({
+    rooms: rooms,
+    message: rooms,
+    success: true,
+  });
+});
 
 export default roomRouter;

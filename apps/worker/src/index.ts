@@ -2,6 +2,7 @@ import { prismaClient } from "@repo/db";
 import { createWorker } from "@repo/queue";
 import { shapesSchema } from "@repo/common";
 createWorker("shapesQueue", async (job) => {
+  console.log("here i am")
   const parsedData = shapesSchema.safeParse(job.data);
   if (!parsedData.success) {
     return;

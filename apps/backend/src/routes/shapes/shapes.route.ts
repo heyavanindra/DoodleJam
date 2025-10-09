@@ -5,9 +5,7 @@ import { prismaClient } from "@repo/db";
 const shapesRoute:Router = express().router;
 
 shapesRoute.get("/:roomId",authMiddleware, async (req: Request, res: Response) => {
-  console.log("called")
   const roomId = Number(req.params.roomId);
-
   try {
     const shapes = await prismaClient.shapes.findMany({
       where: {

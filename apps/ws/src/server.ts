@@ -3,18 +3,23 @@ import { WebSocketServer, WebSocket } from "ws";
 const server = createServer();
 import { userQueue } from "@repo/queue";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import dotenv from "dotenv"
+
+dotenv.config()
+
 
 const wsServer = new WebSocketServer({ server });
 
 async function validateToken(token: string) {
+  
   try {
     const JWKS = createRemoteJWKSet(
       new URL(`${process.env.BETTER_AUTH_URL}/api/auth/jwks`)
     );
 
     const { payload } = await jwtVerify(token, JWKS, {
-      issuer: process.env.BETTER_AUTH_CLIENTURL,
-      audience: process.env.BETTER_AUTH_CLIENT_URL,
+      issuer: process.env.BETTER_AUTH_URL,
+      audience: process.env.BETTER_AUTH_URL,
     });
     return payload;
   } catch (error) {
@@ -49,6 +54,8 @@ wsServer.on("connection", async (ws, req) => {
     const parsedData = JSON.parse(data.toString());
     if (parsedData.type === "join_room") {
       console.log("joining room");
+      console.log(parsedData)
+      
       const user = User.find((x) => x.ws === ws);
       user?.roomId.push(parsedData.roomId);
       console.log(user?.userId);
@@ -68,17 +75,21 @@ wsServer.on("connection", async (ws, req) => {
       console.log("sending data");
       const roomId = parsedData.roomId;
       const shape = parsedData.shape;
+      const shapeType = parsedData.shapeType
+      console.log(parsedData)
       User.map((user, _) => {
         if (user.roomId == roomId && user.ws != ws) {
           const data = {
             type: "chat",
             roomId: roomId,
             shape: shape,
+            shapeType:shapeType
           };
           user.ws.send(JSON.stringify(data));
           userQueue.add("shapesQueue", {
             shapes: shape,
             roomId: roomId,
+            shapeType
           });
         }
       });

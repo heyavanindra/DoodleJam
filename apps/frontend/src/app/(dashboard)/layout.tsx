@@ -3,14 +3,15 @@ import { authClient } from "@repo/auth/client";
 import { LogOut, Palette } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const [name, setName] = useState("");
-  async function getName() {
+ useEffect(() => {
+    async function getName() {
     const session = await authClient.getSession();
     if (!session || !session.data) {
       return;
@@ -18,6 +19,9 @@ export default function Layout({
     setName(session.data.user.name);
   }
   getName();
+ 
+ }, [])
+ 
 
   const router = useRouter();
   return (

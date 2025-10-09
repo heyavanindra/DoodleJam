@@ -1,7 +1,7 @@
 "use client";
 import { authClient } from "@repo/auth/client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import {
   LogOut,
@@ -13,6 +13,15 @@ import {
   Search,
   ArrowRight,
 } from "lucide-react";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import Link from "next/link";
+
+type RoomProps = {
+  name: string;
+  id: string;
+  adminId: string;
+};
 
 const Dashboard = () => {
   const router = useRouter();
@@ -20,40 +29,58 @@ const Dashboard = () => {
   const [roomId, setRoomId] = useState("");
   const [showJoinModal, setShowJoinModal] = useState(false);
 
- 
-  const handleJoinRoom = ()=> {
-    router.push(`/canvas/${roomId}`)
-  }
+  const handleJoinRoom = () => {
+    router.push(`/canvas/${roomId}`);
+  };
+  const [rooms, setRooms] = useState<RoomProps[]>([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const getRoom = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get("/room");
+        setRooms(response.data.rooms);
+        console.log(response.data.rooms);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Something went wrong");
+        console.error(error);
+        setLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getRoom();
+  }, []);
 
   // Skeleton room data
-  const rooms = [
-    {
-      id: "1",
-      name: "Creative Doodles",
-      participants: 5,
-      createdAt: "2 hours ago",
-      color: "from-blue-500 to-purple-500",
-    },
-    {
-      id: "2",
-      name: "Art Jam Session",
-      participants: 3,
-      createdAt: "5 hours ago",
-      color: "from-pink-500 to-rose-500",
-    },
-    {
-      id: "3",
-      name: "Design Sprint",
-      participants: 8,
-      createdAt: "1 day ago",
-      color: "from-green-500 to-teal-500",
-    },
-  ];
+  // const rooms = [
+  //   {
+  //     id: "1",
+  //     name: "Creative Doodles",
+  //     participants: 5,
+  //     createdAt: "2 hours ago",
+  //     color: "from-blue-500 to-purple-500",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Art Jam Session",
+  //     participants: 3,
+  //     createdAt: "5 hours ago",
+  //     color: "from-pink-500 to-rose-500",
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Design Sprint",
+  //     participants: 8,
+  //     createdAt: "1 day ago",
+  //     color: "from-green-500 to-teal-500",
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
       {/* Header */}
-     
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -74,7 +101,9 @@ const Dashboard = () => {
               <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center mb-4">
                 <Plus className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Create New Room</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Create New Room
+              </h2>
               <p className="text-white/80 mb-4">
                 Start a new doodle session with friends
               </p>
@@ -93,14 +122,20 @@ const Dashboard = () => {
           <motion.button
             onClick={() => setShowJoinModal(true)}
             className="group relative overflow-hidden bg-card/50 backdrop-blur-xl border-2 border-border/50 rounded-2xl p-8 text-left"
-            whileHover={{ scale: 1.02, y: -4, borderColor: "var(--color-primary)" }}
+            whileHover={{
+              scale: 1.02,
+              y: -4,
+              borderColor: "var(--color-primary)",
+            }}
             whileTap={{ scale: 0.98 }}
           >
             <div className="relative z-10">
               <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                 <DoorOpen className="w-7 h-7 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Join Room</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                Join Room
+              </h2>
               <p className="text-muted-foreground mb-4">
                 Enter a room ID to join an existing session
               </p>
@@ -131,51 +166,55 @@ const Dashboard = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room, index) => (
-              <motion.div
-                key={room.id}
-                className="group bg-card/50 backdrop-blur-xl border border-border/50 rounded-2xl p-6 hover:border-primary/50 transition-all cursor-pointer"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className={`w-full h-32 bg-gradient-to-br ${room.color} rounded-xl mb-4 relative overflow-hidden`}>
+            {loading ? (
+              <>loading</>
+            ) : rooms.length === 0 ? (
+              <p>NO rooms exists</p>
+            ) : (
+              rooms &&
+              rooms.map((room, index) => (
+                <Link href={`/canvas/${room.id}`} key={room.id}>
+                  {" "}
                   <motion.div
-                    className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Palette className="w-12 h-12 text-white/50" />
-                  </div>
-                </div>
+                    key={room.id}
+                    className="group bg-card/50 backdrop-blur-xl border border-border/50 rounded-2xl p-6 hover:border-primary/50 transition-all cursor-pointer"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    whileHover={{ scale: 1.02, y: -4 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <div
+                      className={`w-full h-32 bg-neutral-100 rounded-xl mb-4 relative overflow-hidden`}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors"
+                        whileHover={{ scale: 1.1 }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Palette className="w-12 h-12 dark:text-white/50 text-neutral-600" />
+                      </div>
+                    </div>
 
-                <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                  {room.name}
-                </h3>
+                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                      {room.name}
+                    </h3>
 
-                <div className="space-y-2">
-                  <div className="flex items-center text-muted-foreground text-sm">
-                    <Users className="w-4 h-4 mr-2" />
-                    <span>{room.participants} participants</span>
-                  </div>
-                  <div className="flex items-center text-muted-foreground text-sm">
-                    <Clock className="w-4 h-4 mr-2" />
-                    <span>Created {room.createdAt}</span>
-                  </div>
-                </div>
-
-                <motion.div
-                  className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <span className="text-sm text-muted-foreground">Room ID: {room.id}</span>
-                  <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-2 transition-transform" />
-                </motion.div>
-              </motion.div>
-            ))}
+                    <motion.div
+                      className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <span className="text-sm text-muted-foreground">
+                        Room ID: {room.id}
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-2 transition-transform" />
+                    </motion.div>
+                  </motion.div>
+                </Link>
+              ))
+            )}
+            {/* {} */}
           </div>
         </motion.div>
       </main>

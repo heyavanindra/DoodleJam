@@ -14,9 +14,10 @@ export const useSocket = ({ roomId }: { roomId: string }) => {
       }
 
       const ws = new WebSocket(`ws://localhost:8000?token=${userToken}`);
-
+console.log("connected")
       ws.onopen = () => {
         const join_room = { type: "join_room", roomId };
+        console.log("1st sending join room request")
         ws.send(JSON.stringify(join_room));
       };
 

@@ -72,30 +72,7 @@ export async function renderCanvas({
     });
 
     canvas.addEventListener("mouseup", (e) => {
-      console.log("in here");
-      IsClicked = false;
-      const width = e.clientX - StartX;
-      const height = e.clientY - StartY;
-      const shape = {
-        x: StartX,
-        y: StartY,
-        width: width,
-        height: height,
-      };
-      ExistingShapes.push({
-        shapeType: "RECT",
-        shape: shape,
-      });
-      const message = {
-        roomId: roomId,
-        type: "chat",
-        shapeType: shapeType,
-        shape: shape,
-      };
-
-      console.log("sending....");
-      ws.send(JSON.stringify(message));
-    });
+     });
 
     canvas.addEventListener("mousemove", (e) => {
       if (IsClicked) {
