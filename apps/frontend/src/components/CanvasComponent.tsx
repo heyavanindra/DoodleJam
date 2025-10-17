@@ -1,9 +1,16 @@
 "use client";
 import { DRAW } from "@/lib/canvas/draw";
-import { Circle, Pencil, RectangleHorizontal } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  Circle,
+  Eraser,
+  Pencil,
+  Pointer,
+  RectangleHorizontal,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-type CanvasItems = "RECT" | "CIRCLE" | "pencil";
+type CanvasItems = "RECT" | "CIRCLE" | "PENCIL" | "POINTER" | "ERASER";
 
 const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -32,17 +39,35 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
     <section className="relative">
       <div className="absolute flex top-3 left-1/2 -translate-x-1/2 p-3 bg-neutral-600 rounded-2xl gap-x-8 text-neutral-200">
         <Pencil
-          className="cursor-pointer"
-          onClick={() => setShapeType("pencil")}
+          className={cn("cursor-pointer", {
+            "text-red-500": shapeType === "PENCIL",
+          })}
+          onClick={() => setShapeType("PENCIL")}
         ></Pencil>
         <Circle
-          className={`cursor-pointer${shapeType === "CIRCLE" ? "text-red-600" : "text-neutral-500"}`}
+          className={cn("cursor-pointer", {
+            "text-red-500": shapeType === "CIRCLE",
+          })}
           onClick={() => setShapeType("CIRCLE")}
         ></Circle>
         <RectangleHorizontal
-          className="cursor-pointer"
+          className={cn("cursor-pointer", {
+            "text-red-500": shapeType === "RECT",
+          })}
           onClick={() => setShapeType("RECT")}
         ></RectangleHorizontal>
+        <Pointer
+          className={cn("cursor-pointer", {
+            "text-red-500": shapeType === "POINTER",
+          })}
+          onClick={() => setShapeType("POINTER")}
+        ></Pointer>
+        <Eraser
+          className={cn("cursor-pointer", {
+            "text-red-500": shapeType === "ERASER",
+          })}
+          onClick={() => setShapeType("ERASER")}
+        ></Eraser>
       </div>
       <canvas
         ref={canvasRef}

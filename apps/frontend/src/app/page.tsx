@@ -99,7 +99,7 @@ const DoodleJamLanding = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-primary to-chart-2 rounded-lg flex items-center justify-center">
                 <Palette className="w-5 h-5 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent">
+              <span className="text-2xl bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent font-custom">
                 DoodleJam
               </span>
             </div>

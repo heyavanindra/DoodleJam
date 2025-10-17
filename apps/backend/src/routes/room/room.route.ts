@@ -22,6 +22,18 @@ roomRouter.post("/", authMiddleware, async (req: Request, res: Response) => {
     return;
   }
   try {
+    const existingRoom = await prismaClient.room.findFirst({
+      where: {
+        name: parsedData.data.name,
+      },
+    });
+    if(existingRoom){
+      res.status(402).json({
+        success: true,
+        message: `Room ${parsedData.data.name} already exist`,
+      });
+      return
+    }
     const room = await prismaClient.room.create({
       data: {
         name: parsedData.data.name,
