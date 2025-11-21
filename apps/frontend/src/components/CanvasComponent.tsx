@@ -55,6 +55,7 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
             "text-red-500": shapeType === "RECT",
           })}
           onClick={() => setShapeType("RECT")}
+          
         ></RectangleHorizontal>
         <Pointer
           className={cn("cursor-pointer", {
