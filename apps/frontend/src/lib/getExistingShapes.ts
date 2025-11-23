@@ -1,25 +1,17 @@
 import api from "./api";
+import { Shape } from "./canvas/draw";
 
-async function getExistingshapes(roomId:string) {
+async function getExistingshapes(roomId: string) {
   const response = await api.get(`/shapes/${roomId}`);
   const res = response.data.shapes;
+  const existingShapes: Shape[] = [];
+  res[0].shapes.map((items: Shape[]) => {
+    existingShapes.push(items[0]);
+  });
 
-  const shapes = res.map(
-    (data: {
-      id: string;
-      type: string;
-      shapetype: string;
-      data: {
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-      };
-    }) => {
-      return data.data;
-    },
-  );
-  return shapes;
+  const filteredShapes = existingShapes.filter((item) => item !== undefined);
+
+  return filteredShapes;
 }
 
 export default getExistingshapes;
