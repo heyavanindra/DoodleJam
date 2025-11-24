@@ -71,8 +71,7 @@ export async function renderCanvas({
       StartY = e.clientY;
     });
 
-    canvas.addEventListener("mouseup", (e) => {
-     });
+    canvas.addEventListener("mouseup", (e) => {});
 
     canvas.addEventListener("mousemove", (e) => {
       if (IsClicked) {

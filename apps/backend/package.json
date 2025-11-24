@@ -25,7 +25,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-     "@repo/auth": "workspace:*",
+    "@repo/auth": "workspace:*",
     "@repo/backend-common": "workspace:*",
     "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",

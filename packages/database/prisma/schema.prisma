@@ -84,23 +84,9 @@ model Jwks {
 }
 
 model Room {
-  id      Int      @id @default(autoincrement())
+  id      Int    @id @default(autoincrement())
   name    String
   adminId String
-  admin   User     @relation(fields: [adminId], references: [id])
-  shapes  Shapes[]
-}
-
-model Shapes {
-  id        Int         @id @default(autoincrement())
-  shapeType ShapesTypes
-  data      Json
-  Room      Room?       @relation(fields: [roomId], references: [id])
-  roomId    Int?
-}
-
-enum ShapesTypes {
-  RECT
-  CIRCLE
-  PENCIL
+  admin   User   @relation(fields: [adminId], references: [id])
+  shapes  Json[]
 }
