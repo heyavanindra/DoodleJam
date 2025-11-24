@@ -103,14 +103,12 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
   const [canRedo, setCanRedo] = useState(false);
   const [scale, setScale] = useState(1);
 
-  // Initialize canvas
   useEffect(() => {
     if (!canvasRef.current) return;
 
     const draw = new DRAW(canvasRef.current, roomId, ws);
     drawRef.current = draw;
 
-    // Set up callbacks
     draw.setOnShapeSelect((shape) => {
       setSelectedShape(shape);
       updateUndoRedoState();
@@ -133,13 +131,11 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
     }
   }, []);
 
-  // Sync tool changes
   const handleToolChange = useCallback((tool: Tool) => {
     setCurrentTool(tool);
     drawRef.current?.setTool(tool);
   }, []);
 
-  // Sync style changes
   useEffect(() => {
     drawRef.current?.setStrokeColor(strokeColor);
   }, [strokeColor]);
@@ -152,7 +148,6 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
     drawRef.current?.setStrokeWidth(strokeWidth);
   }, [strokeWidth]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -174,7 +169,6 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
       if (e.key === "e" || e.key === "E") handleToolChange("eraser");
       if (e.key === "h" || e.key === "H") handleToolChange("pan");
 
-      // Undo/Redo
       if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) {
         e.preventDefault();
         draw.undo();
@@ -189,7 +183,6 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
         updateUndoRedoState();
       }
 
-      // Zoom
       if ((e.metaKey || e.ctrlKey) && e.key === "=") {
         e.preventDefault();
         draw.zoomIn();
@@ -206,10 +199,8 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
         setScale(1);
       }
 
-      // Delete selected shape
       if (e.key === "Delete" || e.key === "Backspace") {
         if (selectedShape && draw.getSelectedShape()) {
-          // Could add deleteSelectedShape method to DRAW class
         }
       }
     };
@@ -218,7 +209,6 @@ const CanvasComponent = ({ roomId, ws }: { roomId: string; ws: WebSocket }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleToolChange, selectedShape, updateUndoRedoState]);
 
-  // Handle text tool click
   const handleCanvasClick = useCallback(
     (e: React.MouseEvent) => {
       if (currentTool !== "text") return;

@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get("/", async (req, res) => {
-  res.send("Hello, World!");
+  res.send("Hello, Welcome to doodleJam api!");
 });
 
 // app.use("/auth",authRouter)
