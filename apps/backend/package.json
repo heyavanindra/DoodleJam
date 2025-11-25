@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "pnpm build && pnpm start",
-    "build": "tsup src/app.ts --out-dir dist --clean --external @repo/auth @repo/db @repo/common @repo/backend-common --format cjs",
+   "build": "esbuild src/app.ts --platform=node --bundle --outdir=dist",
     "start": "node ./dist/app.js"
   },
   "keywords": [],
