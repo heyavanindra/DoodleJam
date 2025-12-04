@@ -8,7 +8,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
 # ------------------------
-# 2. Prune Turborepo (only backend needed)
+# 2. Prune Turborepo (only ws needed)
 # ------------------------
 FROM base AS builder
 
@@ -23,7 +23,7 @@ RUN pnpm add turbo --global
 
 COPY . .
 
-RUN pnpm dlx turbo prune --scope=backend --docker
+RUN pnpm dlx turbo prune --scope=ws --docker
 
 # ------------------------
 # 3. Install Dependencies (cached layer)
@@ -37,7 +37,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/out/full/ .
 
-RUN pnpm turbo build --filter=backend...
+RUN pnpm turbo build --filter=ws...
 
 # ------------------------
 # 4. Production Runner
@@ -47,14 +47,13 @@ FROM base AS runner
 WORKDIR /app
 
 # Create non-root user
-RUN addgroup -S backend && adduser -S -G backend backend
+RUN addgroup -S ws && adduser -S -G ws ws
 
-USER backend
+USER ws
 
-COPY --from=installer /app/apps/backend/dist ./dist
-COPY --from=installer /app/apps/backend/package.json ./
-COPY --from=installer /app/node_modules ./node_modules
+COPY --from=installer /app/apps/ws/dist ./dist
+COPY --from=installer /app/apps/ws/package.json ./
 
-EXPOSE 4000
+EXPOSE 8000
 
-CMD ["node", "dist/app.js"]
+CMD ["node", "dist/server.js"]

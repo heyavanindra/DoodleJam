@@ -21,7 +21,7 @@ const CreateRoom = () => {
     } catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       toast.warning(
-        axiosError.response?.data.message || "Something went wrong"
+        axiosError.response?.data.message || "Something went wrong",
       );
       console.error(error);
     }
@@ -70,7 +70,7 @@ const CreateRoom = () => {
 
         {/* Form Content */}
         <div className="space-y-4">
-          {/* Username Input (Common for both) */}
+           {/*Username Input (Common for both) */}
           <div>
             <label
               htmlFor="username"

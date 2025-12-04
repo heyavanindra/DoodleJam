@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 export const auth = betterAuth({
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: [process.env.CLIENT_URL || "http://localhost:3000"],
   emailAndPassword: {
     enabled: true,
   },

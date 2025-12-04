@@ -12,7 +12,7 @@ const wsServer = new WebSocketServer({ server });
 async function validateToken(token: string) {
   try {
     const JWKS = createRemoteJWKSet(
-      new URL(`${process.env.BETTER_AUTH_URL}/api/auth/jwks`),
+      new URL(`${process.env.BETTER_AUTH_URL}/api/auth/jwks`)
     );
 
     const { payload } = await jwtVerify(token, JWKS, {
@@ -46,57 +46,95 @@ wsServer.on("connection", async (ws, req) => {
     roomId: [],
     ws: ws,
   });
-  console.log("connection done");
+
+  ws.on("close", () => {
+    console.log("User disconnected");
+    User = User.filter((x) => x.ws !== ws);
+  });
+
   ws.on("message", (data) => {
-    console.log("in here");
     const parsedData = JSON.parse(data.toString());
+    console.log("parsed data",parsedData)
     if (parsedData.type === "join_room") {
-      console.log("joining room");
-      console.log(parsedData);
+      console.log("User joined room");
 
       const user = User.find((x) => x.ws === ws);
       user?.roomId.push(parsedData.roomId);
-      console.log(user?.userId);
       return;
     }
 
     if (parsedData.type === "leave_room") {
-      console.log("leaving room");
-      const foundUser = User.find((x) => x.ws === ws);
-      if (!foundUser) {
+      console.log("user left room");
+      const user = User.find((x) => x.ws === ws);
+      if (!user) {
         return;
       }
-      User = User.filter((x) => x.roomId === foundUser.roomId);
+      user.roomId = user.roomId.filter((x) => x !== parsedData.roomId);
     }
 
     if (parsedData.type === "chat") {
-      console.log("sending data");
       const roomId = parsedData.roomId;
       const shape = parsedData.message;
-      console.log(JSON.parse(parsedData.message));
-      User.map((user, _) => {
-        if (user.roomId == roomId && user.ws != ws) {
-          user.ws.send(JSON.stringify(parsedData));
-          userQueue.add("shapesQueue", {
-            shapes: shape,
-            roomId: roomId,
-            shapeAction: "CREATE",
-          });
-        }
-      });
-    } else if (parsedData.type === "delete_message") {
-      console.log("deleting");
-      console.log("")
-      const roomId = parsedData.roomId;
       User.map((user, _) => {
         if (user.roomId == roomId && user.ws != ws) {
           user.ws.send(JSON.stringify(parsedData));
         }
       });
       userQueue.add("shapesQueue", {
+        shapes: shape,
         roomId: roomId,
-        id: parsedData.messageId,
+        shapeAction: "CREATE",
       });
+    } else if (parsedData.type === "update_message") {
+      console.log("Updating user data updated code");
+
+      // console.log("");
+      const roomId = parsedData.roomId;
+      User.map((user, _) => {
+
+        console.log("client id",user.roomId);
+        console.log("room id",roomId)
+        if (user.roomId.includes(roomId) && user.ws != ws) {
+          console.log("sending user updated data",parsedData);
+
+          user.ws.send(JSON.stringify(parsedData));
+        }
+      });
+      userQueue.add("shapeQueue", {
+        roomId: roomId,
+        shapes: JSON.stringify({ id: parsedData.messageId, shape: parsedData }),
+        shapeAction: "UPDATE",
+      });
+      // userQueue.add("shapesQueue", {
+      //   roomId: roomId,
+      //   shapes: JSON.stringify({ id: parsedData.messageId ,shape:parsedData. }),
+      //   shapeAction: "UPDATE",
+      // });
+    } else if (parsedData.type === "delete_message") {
+      console.log("Deleting user data updated code");
+
+      // console.log("");
+      const roomId = parsedData.roomId;
+      User.map((user, _) => {
+
+        console.log("client id",user.roomId);
+        console.log("room id",roomId)
+        if (user.roomId.includes(roomId) && user.ws != ws) {
+          console.log("sending user updated data",parsedData);
+
+          user.ws.send(JSON.stringify(parsedData));
+        }
+      });
+      userQueue.add("shapeQueue", {
+        roomId: roomId,
+        shapes: JSON.stringify({ id: parsedData.messageId, shape: parsedData }),
+        shapeAction: "DELETE",
+      });
+      // userQueue.add("shapesQueue", {
+      //   roomId: roomId,
+      //   shapes: JSON.stringify({ id: parsedData.messageId ,shape:parsedData. }),
+      //   shapeAction: "UPDATE",
+      // });
     }
   });
 });

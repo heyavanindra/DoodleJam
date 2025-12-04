@@ -13,6 +13,7 @@ export default function Layout({
  useEffect(() => {
     async function getName() {
     const session = await authClient.getSession();
+    console.log("session",session)
     if (!session || !session.data) {
       return;
     }

@@ -1,25 +1,20 @@
 import { prismaClient } from "@repo/db";
 import { createWorker } from "@repo/queue";
 import { shapesSchema } from "@repo/common";
+
 createWorker("shapesQueue", async (job) => {
-  console.log("here i am");
-  console.log("jobs data", job.data);
   const data = {
     roomId: job.data.roomId,
     shapeAction: job.data.shapeAction,
     shapes: JSON.parse(job.data.shapes),
   };
-  console.log("after parsing data", data);
   const parsedData = shapesSchema.safeParse(data);
   if (!parsedData.success) {
-    console.log("succeeded", parsedData.error.message);
     return;
   }
-  console.log("parsed data", parsedData.data);
   try {
     if (parsedData.data.shapeAction === "CREATE") {
-      console.log("updating data");
-     const dbData =  await prismaClient.room.update({
+      const dbData = await prismaClient.room.update({
         where: {
           id: Number(parsedData.data.roomId),
         },
@@ -29,29 +24,72 @@ createWorker("shapesQueue", async (job) => {
           },
         },
       });
-     console.log("data data",dbData.shapes)
     } else if (parsedData.data.shapeAction === "DELETE") {
+      console.log("Deleting shape");
       const room = await prismaClient.room.findUnique({
         where: { id: Number(parsedData.data.roomId) },
         select: { shapes: true },
       });
-
-      const objectId = parsedData.data.shapes?.id as { id: string };
-      const filteredRoom = room?.shapes.filter((shape) => {
-        const s = shape as { id: string }; // type assertion
-        return s.id !== objectId.id;
+      const targetId = (parsedData.data.shapes as { id: string }).id;
+      let filterShapeIndex = 0;
+      let found = false;
+      room?.shapes.map((shape, idx) => {
+        const s = shape as [{ id: string }];
+        if (s[0].id === targetId) {
+          found = true;
+          filterShapeIndex = idx;
+          return;
+        }
       });
-      await prismaClient.room.update({
+
+      if (!found) {
+        return;
+      }
+      room?.shapes.splice(filterShapeIndex, 1);
+    
+      const shapesRemoved = await prismaClient.room.update({
         where: {
           id: Number(parsedData.data.roomId),
         },
         data: {
-          shapes: filteredRoom,
+          shapes: {
+            set: room?.shapes,
+          },
+        },
+      });
+    } else if (parsedData.data.shapeAction === "UPDATE") {
+      const room = await prismaClient.room.findUnique({
+        where: { id: Number(parsedData.data.roomId) },
+        select: { shapes: true },
+      });
+      const targetId = (parsedData.data.shapes as { id: string }).id;
+      let filterShapeIndex = 0;
+      let found = false;
+      room?.shapes.map((shape, idx) => {
+        const s = shape as [{ id: string }];
+        if (s[0].id === targetId) {
+          found = true;
+          filterShapeIndex = idx;
+          return;
+        }
+      });
+
+      if (!found) {
+        return;
+      }
+      room?.shapes.splice(filterShapeIndex, 1);
+      room?.shapes.push([JSON.parse(parsedData.data.shapes?.shape.message)]);
+      const shapesRemoved = await prismaClient.room.update({
+        where: {
+          id: Number(parsedData.data.roomId),
+        },
+        data: {
+          shapes: {
+            set: room?.shapes,
+          },
         },
       });
     }
-
-    console.log(parsedData.data);
   } catch (error) {
     console.error(error);
   }

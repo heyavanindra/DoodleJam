@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
+import TopLoader from "@/components/top-loader";
 export const metadata: Metadata = {
   title: "DoodleJam",
   description: "Your collaborative Board",
@@ -21,6 +22,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <TopLoader></TopLoader>
+
           {children}
           <Toaster />
         </ThemeProvider>

@@ -18,7 +18,7 @@ shapesRoute.get(
       console.log(shapes);
       res.status(200).json({
         success: false,
-        shapes: shapes,
+        shape: shapes,
         message: "shapes found",
       });
     } catch (error) {

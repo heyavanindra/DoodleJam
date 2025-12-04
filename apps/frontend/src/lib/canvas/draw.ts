@@ -381,6 +381,17 @@ export class DRAW {
       }),
     );
   }
+  private sendUpdateMessage(id: string, shape: Shape) {
+    this.socket?.send(
+      JSON.stringify({
+        type: "update_message",
+        roomId: this.roomId,
+        messageId: id,
+        message: JSON.stringify(shape),
+      }),
+    );
+  }
+
 
   private initSocketHandlers() {
     if (!this.socket) return;
@@ -391,8 +402,15 @@ export class DRAW {
       if (message.type === "chat") {
         const shape = JSON.parse(message.message);
         this.existingShapes.push(shape);
+      } else if (message.type ==="update_message") {
+        console.log("updating message", message)
+        this.existingShapes = this.existingShapes.filter(
+          (s) => s.id !== message.messageId,
+        );
+
+        const shape = JSON.parse(message.message)
+        this.existingShapes.push(shape)
       } else {
-        console.log("ider log hua");
         this.existingShapes = this.existingShapes.filter(
           (s) => s.id !== message.messageId,
         );
@@ -407,7 +425,15 @@ export class DRAW {
       const shape = JSON.parse(msg.message);
       this.existingShapes.push(shape);
       this.clearCanvas();
-    } else if (msg.type === "delete_message") {
+    } else if (msg.type ==="update_message") {
+        console.log("updating message", msg)
+        this.existingShapes = this.existingShapes.filter(
+          (s) => s.id !== msg.messageId,
+        );
+
+        const shape = JSON.parse(msg.message)
+        this.existingShapes.push(shape)
+      } else if (msg.type === "delete_message") {
       this.existingShapes = this.existingShapes.filter(
         (s) => s.id !== msg.messageId,
       );
@@ -728,8 +754,8 @@ export class DRAW {
       });
       this.clearRedoStack();
 
-      this.sendDeleteMessage(this.selectedShape.id);
-      this.sendShapeMessage(this.selectedShape);
+      this.sendUpdateMessage(this.selectedShape.id, this.selectedShape);
+      // this.sendShapeMessage(this.selectedShape);
       document.body.style.cursor = "pointer";
       return;
     }
@@ -1128,7 +1154,7 @@ export class DRAW {
     );
 
     // Draw all shapes
-    console.log(this.existingShapes)
+    console.log(this.existingShapes);
     for (const el of this.existingShapes) {
       const s = el.shape;
       this.ctx.strokeStyle = s.strokeColor || "#ffffff";

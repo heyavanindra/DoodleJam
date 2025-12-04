@@ -32,4 +32,6 @@ app.get("/", async (req, res) => {
 app.use("/room", roomRouter);
 app.use("/shapes", shapesRoute);
 
-export default app;
+app.listen(process.env.PORT,()=>{
+  console.log("Server is listening on port :",PORT)
+})
