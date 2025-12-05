@@ -362,7 +362,6 @@ export class DRAW {
   // ===== SOCKET COMMUNICATION =====
 
   private sendShapeMessage(shape: Shape) {
-    console.log(shape);
     this.socket?.send(
       JSON.stringify({
         type: "chat",
@@ -396,14 +395,12 @@ export class DRAW {
   private initSocketHandlers() {
     if (!this.socket) return;
     this.socket.onmessage = (Event) => {
-      console.log("here we go again");
-      console.log(Event.data, "data");
+
       const message = JSON.parse(Event.data);
       if (message.type === "chat") {
         const shape = JSON.parse(message.message);
         this.existingShapes.push(shape);
       } else if (message.type ==="update_message") {
-        console.log("updating message", message)
         this.existingShapes = this.existingShapes.filter(
           (s) => s.id !== message.messageId,
         );
@@ -426,7 +423,6 @@ export class DRAW {
       this.existingShapes.push(shape);
       this.clearCanvas();
     } else if (msg.type ==="update_message") {
-        console.log("updating message", msg)
         this.existingShapes = this.existingShapes.filter(
           (s) => s.id !== msg.messageId,
         );
@@ -825,7 +821,6 @@ export class DRAW {
       this.existingShapes.push(newShape);
       this.operationsStack.push({ type: "add", shapes: [newShape] });
       this.clearRedoStack();
-      console.log("shape log ho gaya", newShape);
       this.sendShapeMessage(newShape);
 
       // Auto-select the new shape
@@ -1154,7 +1149,6 @@ export class DRAW {
     );
 
     // Draw all shapes
-    console.log(this.existingShapes);
     for (const el of this.existingShapes) {
       const s = el.shape;
       this.ctx.strokeStyle = s.strokeColor || "#ffffff";

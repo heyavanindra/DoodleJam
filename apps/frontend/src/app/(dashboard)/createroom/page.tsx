@@ -26,7 +26,6 @@ const CreateRoom = () => {
       console.error(error);
     }
 
-    console.log("Creating room with username:", username);
   };
 
   const handleJoinRoom = () => {

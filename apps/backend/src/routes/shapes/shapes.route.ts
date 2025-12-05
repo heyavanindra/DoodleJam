@@ -15,7 +15,6 @@ shapesRoute.get(
           id: roomId,
         },
       });
-      console.log(shapes);
       res.status(200).json({
         success: false,
         shape: shapes,

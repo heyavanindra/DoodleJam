@@ -37,8 +37,17 @@ RUN pnpm install --frozen-lockfile
 # Copy full pruned frontend workspace
 COPY --from=prepare /app/out/full/ .
 
+# Accept build arguments for NEXT_PUBLIC_ variables
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_BETTER_AUTH_REDIRECT_URL
+
+# Set environment variables for build
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+ENV NEXT_PUBLIC_BETTER_AUTH_REDIRECT_URL=$NEXT_PUBLIC_BETTER_AUTH_REDIRECT_URL
+
 # Build frontend app
 RUN pnpm dlx turbo run build --filter=frontend...
+
 
 # --------------------------
 # Runner stage: production image

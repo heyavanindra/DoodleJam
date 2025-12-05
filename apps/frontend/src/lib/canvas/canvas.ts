@@ -25,8 +25,7 @@ export async function renderCanvas({
   roomId: string;
   shapeType: string;
 }) {
-  console.log("shapeType", shapeType);
-  console.log("IN render funciton");
+  
   // const ExistingShapes: ShapeTypeProps[] = await getExistingshapes({ roomId });
   const ExistingShapes: ShapeTypeProps[] = [];
 
@@ -35,19 +34,16 @@ export async function renderCanvas({
     return;
   }
 
-  console.log("Canvas rendered");
   const ctx = canvasRef.current?.getContext("2d");
   if (!ctx) {
     return;
   }
 
-  console.log("Got Context");
 
   let IsClicked = false;
 
   ws.onmessage = (Event) => {
     const message = JSON.parse(Event.data);
-    console.log("Recieved Shape", Event.data);
     if (message.type === "chat") {
       const shapes = message.shape;
       const shapeType = message.shapeType;
@@ -64,7 +60,6 @@ export async function renderCanvas({
   if (shapeType === "RECT") {
     let StartX = 0;
     let StartY = 0;
-    console.log("RECT ke andar hu bc");
     canvas.addEventListener("mousedown", (e) => {
       IsClicked = true;
       StartX = e.clientX;
@@ -130,7 +125,6 @@ function clearCanvar(
   ExistingShapes.map((shapes, _) => {
     if (shapes.shapeType === "RECT") {
       ctx.strokeStyle = "rgba(255,255,255)";
-      console.log(shapes);
       ctx.strokeRect(
         shapes.shape.x,
         shapes.shape.y,

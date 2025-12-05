@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import { z } from "zod";
 import { authClient } from "@repo/auth/client";
+import Link from "next/link";
 type DataType = z.Infer<typeof loginSchema>;
 
 const Login = () => {
@@ -44,7 +45,6 @@ const Login = () => {
   };
 
   const onSubmit: SubmitHandler<DataType> = async (data) => {
-    console.log(data);
 
     try {
       await authClient.signIn.email(
@@ -438,7 +438,7 @@ const Login = () => {
                 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Sign Up
+              <Link href="/signup">Sign Up</Link>
               </motion.a>
             </p>
           </motion.div>

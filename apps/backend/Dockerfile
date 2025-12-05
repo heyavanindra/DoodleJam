@@ -37,7 +37,12 @@ RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/out/full/ .
 
-RUN pnpm turbo build --filter=backend...
+RUN pnpm turbo build --filter=backend...   
+
+RUN cp -r node_modules/.pnpm/@prisma+client@6.15.0_prisma@6.15.0_typescript@5.9.2__typescript@5.9.2/node_modules/.prisma ./apps/backend/dist/
+
+
+
 
 # ------------------------
 # 4. Production Runner
@@ -51,9 +56,13 @@ RUN addgroup -S backend && adduser -S -G backend backend
 
 USER backend
 
+
 COPY --from=installer /app/apps/backend/dist ./dist
 COPY --from=installer /app/apps/backend/package.json ./
-COPY --from=installer /app/node_modules ./node_modules
+
+
+ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/dist/.prisma/client/libquery_engine-linux-musl-openssl-3.0.x.so.node
+
 
 EXPOSE 4000
 

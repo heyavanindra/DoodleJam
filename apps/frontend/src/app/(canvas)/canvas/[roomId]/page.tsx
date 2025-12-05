@@ -14,7 +14,6 @@ const RoomCanvas = async ({
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  // console.log("session here",session?.user)
   if (!session) {
     redirect("/login");
   }

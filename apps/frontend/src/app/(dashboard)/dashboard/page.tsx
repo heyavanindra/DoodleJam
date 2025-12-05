@@ -54,9 +54,7 @@ const Dashboard = () => {
       setLoading(true);
       try {
         const response = await api.get("/room");
-        console.log(response.data, "Response data");
         setRooms(response.data.rooms);
-        console.log(response.data.rooms);
         setLoading(false);
       } catch (error) {
         toast.error("Something went wrong");
@@ -96,7 +94,6 @@ const Dashboard = () => {
 
   const handleCreateRoom = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("first");
     try {
       const response = await api.post("/room", {
         name: username,
@@ -113,7 +110,6 @@ const Dashboard = () => {
       toast("Error while creating room");
     }
 
-    console.log("Creating room with username:", username);
   };
 
   return (

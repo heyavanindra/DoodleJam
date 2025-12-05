@@ -7,12 +7,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const PORT = process.env.PORT || 8000;
+
 const wsServer = new WebSocketServer({ server });
 
 async function validateToken(token: string) {
   try {
     const JWKS = createRemoteJWKSet(
-      new URL(`${process.env.BETTER_AUTH_URL}/api/auth/jwks`)
+      new URL(`${process.env.AUTH_URL}/api/auth/jwks`)
     );
 
     const { payload } = await jwtVerify(token, JWKS, {
@@ -48,23 +50,18 @@ wsServer.on("connection", async (ws, req) => {
   });
 
   ws.on("close", () => {
-    console.log("User disconnected");
     User = User.filter((x) => x.ws !== ws);
   });
 
   ws.on("message", (data) => {
     const parsedData = JSON.parse(data.toString());
-    console.log("parsed data",parsedData)
     if (parsedData.type === "join_room") {
-      console.log("User joined room");
-
       const user = User.find((x) => x.ws === ws);
       user?.roomId.push(parsedData.roomId);
       return;
     }
 
     if (parsedData.type === "leave_room") {
-      console.log("user left room");
       const user = User.find((x) => x.ws === ws);
       if (!user) {
         return;
@@ -86,17 +83,9 @@ wsServer.on("connection", async (ws, req) => {
         shapeAction: "CREATE",
       });
     } else if (parsedData.type === "update_message") {
-      console.log("Updating user data updated code");
-
-      // console.log("");
       const roomId = parsedData.roomId;
       User.map((user, _) => {
-
-        console.log("client id",user.roomId);
-        console.log("room id",roomId)
         if (user.roomId.includes(roomId) && user.ws != ws) {
-          console.log("sending user updated data",parsedData);
-
           user.ws.send(JSON.stringify(parsedData));
         }
       });
@@ -111,17 +100,9 @@ wsServer.on("connection", async (ws, req) => {
       //   shapeAction: "UPDATE",
       // });
     } else if (parsedData.type === "delete_message") {
-      console.log("Deleting user data updated code");
-
-      // console.log("");
       const roomId = parsedData.roomId;
       User.map((user, _) => {
-
-        console.log("client id",user.roomId);
-        console.log("room id",roomId)
         if (user.roomId.includes(roomId) && user.ws != ws) {
-          console.log("sending user updated data",parsedData);
-
           user.ws.send(JSON.stringify(parsedData));
         }
       });

@@ -47,7 +47,6 @@ const SignUp = () => {
   };
 
   const onSubmit: SubmitHandler<User> = async (data) => {
-    console.log(data);
     try {
        await authClient.signUp.email(
         {

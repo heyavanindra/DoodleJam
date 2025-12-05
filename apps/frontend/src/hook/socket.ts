@@ -16,10 +16,8 @@ export const useSocket = ({ roomId }: { roomId: string }) => {
       }
 
       ws = new WebSocket(`${WEB_SOCKET_URL}?token=${userToken}`);
-      console.log("connected");
       ws.onopen = () => {
         const join_room = { type: "join_room", roomId };
-        console.log("1st sending join room request");
         ws.send(JSON.stringify(join_room));
       };
 
@@ -28,9 +26,7 @@ export const useSocket = ({ roomId }: { roomId: string }) => {
 
     fetchTokenAndConnect();
     return () => {
-      console.log("leaving room 1");
       if (ws && ws.readyState === WebSocket.OPEN) {
-        console.log("leaving room 2");
         const leave_room = { type: "leave_room", roomId };
         ws.send(JSON.stringify(leave_room));
         setSocket(ws);

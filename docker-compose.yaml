@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
   postgres:
-    image: postgres
+    image: postgres:16-alpine
     ports:
       - "5432:5432"
     environment:
@@ -30,8 +28,9 @@ services:
     environment:
       - DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/mydatabase
       - REDIS_URL=redis://redis:6379
+      - PORT=4000
     env_file:
-      - apps/backend/.env
+      - .env
     depends_on:
       - postgres
       - redis
@@ -46,8 +45,14 @@ services:
     environment:
       - DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/mydatabase
       - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PORT=6379
+      - PORT=8000
+      - BETTER_AUTH_URL=http://localhost:4000
+      - AUTH_URL=http://backend:4000
     env_file:
-      - apps/ws/.env
+      - .env
     depends_on:
       - postgres
       - redis
@@ -60,20 +65,28 @@ services:
     environment:
       - DATABASE_URL=postgresql://myuser:mypassword@postgres:5432/mydatabase
       - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     env_file:
-      - apps/worker/.env
+      - .env
     depends_on:
       - postgres
       - redis
     restart: always
+
   frontend:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_BASE_URL: http://localhost:4000
+        NEXT_PUBLIC_BETTER_AUTH_REDIRECT_URL: http://localhost:3000
     ports:
       - "3000:3000"
+    environment:
+      - PORT=3000
     env_file:
-      - apps/frontend/.env
+      - .env
     depends_on:
       - postgres
       - redis

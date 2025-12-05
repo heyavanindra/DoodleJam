@@ -25,7 +25,6 @@ createWorker("shapesQueue", async (job) => {
         },
       });
     } else if (parsedData.data.shapeAction === "DELETE") {
-      console.log("Deleting shape");
       const room = await prismaClient.room.findUnique({
         where: { id: Number(parsedData.data.roomId) },
         select: { shapes: true },
